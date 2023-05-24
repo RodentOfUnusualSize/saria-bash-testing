@@ -1,0 +1,8 @@
+# Automatic line ending conversion #####################################
+
+*   text=auto
+
+# Documentation ########################################################
+
+README  linguist-language=Markdown  export-ignore
+LICENSE linguist-language=Markdown  export-ignore
