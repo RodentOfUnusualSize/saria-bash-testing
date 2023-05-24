@@ -1,7 +1,25 @@
 # Saria’s BaSH testing library
 
+[![Latest release][shield-release]][repo-url-releases]
+[![Tests status][shield-workflow-run-tests]][repo-url-workflow-run-tests]
+[![Top language][shield-language]][repo-url]
+[![Licence][shield-license]][project-url-license]
+
 Testing library for shell scripts.
 
 Saria’s BaSH testing library is a single-file shell script that provides testing routines. It can be sourced into a script to create simple and clean testing scripts.
+
+
+[project-url-license]: ../LICENSE
+[project-url-script]: ../saria-testing.sh
+
+[repo-url]: https://github.com/RodentOfUnusualSize/saria-bash-testing
+[repo-url-releases]: https://github.com/RodentOfUnusualSize/saria-bash-testing/releases
+[repo-url-workflow-run-tests]: https://github.com/RodentOfUnusualSize/saria-bash-testing/actions/workflows/run-tests.yml
+
+[shield-language]: https://img.shields.io/github/languages/top/RodentOfUnusualSize/saria-bash-testing.svg
+[shield-license]: https://img.shields.io/github/license/RodentOfUnusualSize/saria-bash-testing.svg
+[shield-release]: https://img.shields.io/github/v/release/RodentOfUnusualSize/saria-bash-testing?include_prereleases&sort=semver
+[shield-workflow-run-tests]: https://img.shields.io/github/actions/workflow/status/RodentOfUnusualSize/saria-bash-testing/run-tests.yml
 
 <!-- vim: syntax=Markdown -->
