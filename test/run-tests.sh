@@ -19,3 +19,7 @@
 # If not, see <https://www.gnu.org/licenses/>.                         #
 #                                                                      #
 ########################################################################
+
+set -e
+set -u
+set -o pipefail
