@@ -23,3 +23,15 @@
 set -e
 set -u
 set -o pipefail
+
+########################################################################
+#                                                                      #
+# For (I hope) obvious reasons, this testing script cannot itself use  #
+# the testing library it is testing to do its tests.                   #
+#                                                                      #
+# So we have to implement a rudimentary testing library right here in  #
+# this testing script, to run all the testing library tests.           #
+#                                                                      #
+# Did I say "testing" enough yet? Testing, testing, testing!           #
+#                                                                      #
+########################################################################
