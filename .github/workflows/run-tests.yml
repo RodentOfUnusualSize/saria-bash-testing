@@ -1,0 +1,17 @@
+name: run-tests-on-push-to-main
+
+on:
+  push:
+    branches:    
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Run tests
+        run: ./test/run-tests.sh
