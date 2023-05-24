@@ -35,3 +35,89 @@ set -o pipefail
 # Did I say "testing" enough yet? Testing, testing, testing!           #
 #                                                                      #
 ########################################################################
+
+
+########################################################################
+#                                                                      #
+# This script runs all valid tests in the tests directory, reporting   #
+# whether they pass or fail.                                           #
+#                                                                      #
+# Valid tests are:                                                     #
+#  *  named 'test.sh'                                                  #
+#  *  executable                                                       #
+#  *  in a sub-directory of the tests directory                        #
+#     *  which has a name that                                         #
+#        >  starts with a lowercase letter                             #
+#        >  contains only lowercase letters, digits, and hyphen/minus  #
+#        >  does not contain consecutive hyphens/minuses               #
+#        >  does not end with a hyphen/minus                           #
+#                                                                      #
+# Tests should use their exit status to signal pass/fail.              #
+#                                                                      #
+# Output of successful tests is suppressed.                            #
+#                                                                      #
+# Output of failed tests is reported, with each line prefixed.         #
+#                                                                      #
+########################################################################
+
+
+########################################################################
+# Configuration ########################################################
+########################################################################
+
+# Directory where tests are found.
+#
+# By default, this script is meant to be run from the project root.
+# Thus, the tests directory is configured from that perspective. If
+# you want to run from another directory (or run tests somewhere else),
+# set an environment variable `testsdir`.
+readonly testsdir=${testsdir:-test/tests}
+
+# Prefix prepended to failed text output.
+readonly failed_test_output_prefix='  > '
+
+
+########################################################################
+# Sanity checks ########################################################
+########################################################################
+
+# Verify tests directory.
+#
+# Yes, this is subject to TOCTOU issues, but it's just a sanity check.
+if [[ ! -d "${testsdir}" ]] ; then
+	printf 'tests directory not found: %s\n' "${testsdir}" >&2
+	exit 1
+fi
+
+
+########################################################################
+# Run tests ############################################################
+########################################################################
+
+# Set up the test counters.
+declare -i pass=0
+declare -i fail=0
+
+# Select all valid tests.
+while IFS= read -r -d $'\0' test ; do
+	printf 'Running test %s... ' "${test}"
+	if "${testsdir}/${test}"/test.sh >/dev/null 2>&1 ; then
+		(( ++pass ))
+		printf '[PASS]\n'
+	else
+		(( ++fail ))
+		printf '[FAIL]\n'
+	fi
+done < <(find "${testsdir}" -mindepth 2 -maxdepth 2 -type f -executable -regex '.*/[a-z][a-z0-9]*\(-[a-z0-9][a-z0-9]*\)*/test.sh' -print0 | sed -z 's|^.*/\([^/]*\)/test\.sh$|\1|')
+
+
+########################################################################
+# Print result #########################################################
+########################################################################
+
+if (( fail == 0 )) ; then
+	printf 'All tests pass (%d/%d).\n' ${pass} ${pass}
+else
+	printf 'Some tests failed (passed: %d; failed: %d).\n' ${pass} ${fail}
+	false
+fi
