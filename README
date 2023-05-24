@@ -1,5 +1,7 @@
 # Saria’s BaSH testing library
 
-Testing library for shell scripts
+Testing library for shell scripts.
+
+Saria’s BaSH testing library is a single-file shell script that provides testing routines. It can be sourced into a script to create simple and clean testing scripts.
 
 <!-- vim: syntax=Markdown -->
