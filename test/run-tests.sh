@@ -65,6 +65,11 @@ set -o pipefail
 # Configuration ########################################################
 ########################################################################
 
+# Path to testing library.
+#
+# By default, this script is meant to be run from the project root.
+readonly libpath=${libpath:-saria-testing.sh}
+
 # Directory where tests are found.
 #
 # By default, this script is meant to be run from the project root.
@@ -89,6 +94,23 @@ if [[ ! -d "${testsdir}" ]] ; then
 	exit 1
 fi
 
+# Verify the testing library file.
+if [[ ! -f "${libpath}" ]] ; then
+	printf 'testing library not found: %s\n' "${libpath}" >&2
+	exit 1
+fi
+
+
+########################################################################
+# Setup ################################################################
+########################################################################
+
+# The absolute path to the testing library is exported, so tests in
+# subshells can use it.
+SARIA_TESTING_LIB__PATH=$(realpath "${libpath}")
+readonly SARIA_TESTING_LIB__PATH
+export SARIA_TESTING_LIB__PATH
+
 
 ########################################################################
 # Run tests ############################################################
@@ -98,16 +120,25 @@ fi
 declare -i pass=0
 declare -i fail=0
 
+# Create a temporary file to hold output.
+output=$(mktemp)
+readonly output
+
 # Select all valid tests.
 while IFS= read -r -d $'\0' test ; do
 	printf 'Running test %s... ' "${test}"
-	if "${testsdir}/${test}"/test.sh >/dev/null 2>&1 ; then
+	pushd "${testsdir}/${test}" >/dev/null
+	if ./test.sh >"${output}" 2>&1 ; then
 		(( ++pass ))
 		printf '[PASS]\n'
 	else
 		(( ++fail ))
 		printf '[FAIL]\n'
+		while IFS= read -r -d $'\n' line ; do
+			printf '%s%s\n' "${failed_test_output_prefix}" "${line}"
+		done <"${output}"
 	fi
+	popd >/dev/null
 done < <(find "${testsdir}" -mindepth 2 -maxdepth 2 -type f -executable -regex '.*/[a-z][a-z0-9]*\(-[a-z0-9][a-z0-9]*\)*/test.sh' -print0 | sed -z 's|^.*/\([^/]*\)/test\.sh$|\1|')
 
 

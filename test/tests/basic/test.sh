@@ -20,13 +20,46 @@
 #                                                                      #
 ########################################################################
 
+set -e
+set -u
+set -o pipefail
 
-########################################################################
-# Set up trap to print test results ####################################
-########################################################################
 
-saria__testing__trap() {
-	printf 'All tests passed (0/0).\n'
-}
+# Set up files to store output.
 
-trap saria__testing__trap EXIT
+stdout=$(mktemp)
+stderr=$(mktemp)
+
+readonly stdout
+readonly stderr
+
+
+# Run the test script.
+
+passed=true
+
+if ! ./script.sh >"${stdout}" 2>"${stderr}" ; then
+	passed=false
+fi
+
+
+# Check the output.
+
+output=$(mktemp)
+readonly output
+
+if ! diff expected-stdout.txt "${stdout}" >"${output}" ; then
+	printf 'stdout diff:\n'
+	cat "${output}"
+	passed=false
+fi
+if ! diff expected-stderr.txt "${stderr}" >"${output}" ; then
+	printf 'stderr diff:\n'
+	cat "${output}"
+	passed=false
+fi
+
+
+# Report.
+
+${passed}
